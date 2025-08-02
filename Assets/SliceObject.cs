@@ -5,9 +5,7 @@ using Unity.VisualScripting;
 using System;
 public class SliceObject : MonoBehaviour
 {
-	public Transform planeDebug;
-	public GameObject target;
-
+	public Transform slicePlane;
 	public Material insideOfSphereMaterial;
 
 	public float sliceForce = 200f;
@@ -27,15 +25,15 @@ public class SliceObject : MonoBehaviour
 	{
 		float offset = getOffset(target);
 		float targetRadius = target.GetComponent<SphereCollider>().radius * target.transform.localScale.x;
-		//print("target radius:" + targetRadius);
+		print("target radius:" + targetRadius);
 
 		float ratio = Mathf.Round((offset / targetRadius)*100) / 100; //ratio is how much of one half of the sphere was cut off. ratio = 0 means it was perfectly cut in half.
-		//print("ratio:" + ratio);
+		print("ratio:" + ratio);
 
 		float score = 100 * (1 - ratio);
 		print("Score:" + score);
 
-		SlicedHull hull = target.Slice(planeDebug.position, planeDebug.up);
+		SlicedHull hull = target.Slice(slicePlane.position, slicePlane.up);
 
 		if (hull != null)
 		{
@@ -55,6 +53,7 @@ public class SliceObject : MonoBehaviour
 		MeshCollider collider = slicedObject.AddComponent<MeshCollider>();
 		collider.convex = true;
 		rb.AddExplosionForce(sliceForce, slicedObject.transform.position, 1);
+		slicedObject.AddComponent<Fruit>();
 	}
 
 	private void OnTriggerEnter(Collider other)
@@ -64,7 +63,7 @@ public class SliceObject : MonoBehaviour
 
 	public float getOffset(GameObject target) //Function returns the distance between the slice and the center of the target
 	{
-		Vector3 vectorBetweenCenters = planeDebug.transform.InverseTransformPoint(target.transform.position);
+		Vector3 vectorBetweenCenters = slicePlane.transform.InverseTransformPoint(target.transform.position);
 		return Math.Abs(vectorBetweenCenters.y);
 	}
 }
